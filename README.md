@@ -4,7 +4,7 @@
 
 ## 安装
 
-最简单：把 `dist/BetterCustomAngles-0.2.0.zip` 直接拖进 Unity Mod Manager 安装。zip 内是 `BetterCustomAngles/` 文件夹，包含 `Info.json`、DLL 和 `Lang/`。
+最简单：把 `dist/BetterCustomAngles-0.1.0.zip` 直接拖进 Unity Mod Manager 安装。zip 内是 `BetterCustomAngles/` 文件夹，包含 `Info.json`、DLL 和 `Lang/`。
 
 手动安装：把 `BetterCustomAngles.dll`、`Info.json` 和 `Lang` 文件夹放到：
 
@@ -16,8 +16,8 @@ UMM 里启用后进入关卡编辑器即可。本项目已在游戏 **3.3.1** �
 
 ## 发布包 / 源码
 
-- `dist/BetterCustomAngles-0.2.0.zip`：UMM 安装包。
-- `dist/BetterCustomAngles-source-0.2.0.zip`：源码压缩包。
+- `dist/BetterCustomAngles-0.1.0.zip`：UMM 安装包。
+- `dist/BetterCustomAngles-source-0.1.0.zip`：源码压缩包。
 - `source/BetterCustomAngles/`：干净的源码目录，可直接上传 GitHub。
 
 ## 功能
