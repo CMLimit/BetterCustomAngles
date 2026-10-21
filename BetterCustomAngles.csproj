@@ -9,7 +9,7 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <OutputPath>bin\</OutputPath>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
-    <Version>0.1.0</Version>
+    <Version>0.1.1</Version>
     <ADOFAI_PATH Condition="'$(ADOFAI_PATH)' == ''">C:\Program Files (x86)\Steam\steamapps\common\A Dance of Fire and Ice</ADOFAI_PATH>
     <MANAGED_PATH>$(ADOFAI_PATH)\A Dance of Fire and Ice_Data\Managed</MANAGED_PATH>
   </PropertyGroup>
