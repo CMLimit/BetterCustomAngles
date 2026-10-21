@@ -89,7 +89,9 @@ namespace BetterCustomAngles
             scnEditor current = scnEditor.instance;
             if (current == null)
             {
-                if (editor != null)
+                // editor 若已被场景卸载销毁，Unity 的 != null 判断会返回 false，
+                // 所以不能只靠 editor != null 来判断是否需要清理浮窗。
+                if (editor != null || vanillaUI != null || overlayVisible)
                 {
                     editor = null;
                     vanillaUI = null;
