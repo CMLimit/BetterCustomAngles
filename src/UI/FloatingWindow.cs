@@ -134,6 +134,18 @@ namespace BetterCustomAngles
             Controller.OnWindowMoved(this, Root.anchoredPosition);
         }
 
+        public void SetScale(float scale)
+        {
+            if (Root == null)
+            {
+                return;
+            }
+
+            scale = Mathf.Clamp(scale, 0.5f, 2f);
+            Root.localScale = new Vector3(scale, scale, 1f);
+            ClampToScreen();
+        }
+
         public void SetPosition(Vector2 position)
         {
             Root.anchoredPosition = position;

@@ -197,6 +197,79 @@ namespace BetterCustomAngles
             return input;
         }
 
+        public static Slider AddSlider(
+            RectTransform rt,
+            Sprite background,
+            Sprite fillSprite,
+            Sprite handleSprite,
+            float minValue,
+            float maxValue,
+            float value,
+            Action<float> onChanged)
+        {
+            var slider = rt.gameObject.AddComponent<Slider>();
+
+            // 透明命中区：让整条滑轨都能响应点击和拖动
+            var hitArea = rt.gameObject.AddComponent<Image>();
+            hitArea.color = Color.clear;
+            hitArea.raycastTarget = true;
+
+            var bg = Rect(rt, "Background");
+            Place(bg, new Vector2(0f, 0.5f), new Vector2(1f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(0f, 6f));
+            var bgImage = bg.gameObject.AddComponent<Image>();
+            bgImage.sprite = background;
+            bgImage.type = Image.Type.Sliced;
+            bgImage.color = Color.white;
+            bgImage.raycastTarget = false;
+
+            var fillArea = Rect(rt, "Fill Area");
+            Place(fillArea, new Vector2(0f, 0.5f), new Vector2(1f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(0f, 6f));
+            var fill = Rect(fillArea, "Fill");
+            fill.anchorMin = Vector2.zero;
+            fill.anchorMax = Vector2.one;
+            fill.pivot = new Vector2(0.5f, 0.5f);
+            fill.offsetMin = Vector2.zero;
+            fill.offsetMax = Vector2.zero;
+            var fillImage = fill.gameObject.AddComponent<Image>();
+            fillImage.sprite = fillSprite;
+            fillImage.type = Image.Type.Sliced;
+            fillImage.color = Color.white;
+            fillImage.raycastTarget = false;
+
+            var handleArea = Rect(rt, "Handle Slide Area");
+            Place(handleArea, Vector2.zero, Vector2.one, new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero);
+            handleArea.offsetMin = new Vector2(9f, 0f);
+            handleArea.offsetMax = new Vector2(-9f, 0f);
+
+            var handle = Rect(handleArea, "Handle");
+            handle.anchorMin = new Vector2(0f, 0f);
+            handle.anchorMax = new Vector2(0f, 1f);
+            handle.pivot = new Vector2(0.5f, 0.5f);
+            handle.sizeDelta = new Vector2(18f, 0f);
+            handle.anchoredPosition = Vector2.zero;
+            var handleImage = handle.gameObject.AddComponent<Image>();
+            handleImage.sprite = handleSprite;
+            handleImage.preserveAspect = true;
+            handleImage.color = Color.white;
+            handleImage.raycastTarget = true;
+
+            slider.fillRect = fill;
+            slider.handleRect = handle;
+            slider.targetGraphic = handleImage;
+            slider.direction = Slider.Direction.LeftToRight;
+            slider.minValue = minValue;
+            slider.maxValue = maxValue;
+            slider.wholeNumbers = false;
+            slider.value = Mathf.Clamp(value, minValue, maxValue);
+
+            if (onChanged != null)
+            {
+                slider.onValueChanged.AddListener(v => onChanged(v));
+            }
+
+            return slider;
+        }
+
         public static void AddLayoutElement(RectTransform rt, float preferredWidth, float preferredHeight, float flexibleWidth = -1f)
         {
             var element = rt.gameObject.AddComponent<LayoutElement>();

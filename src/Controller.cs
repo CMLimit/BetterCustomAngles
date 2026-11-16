@@ -23,6 +23,7 @@ namespace BetterCustomAngles
         private AngleListWindow historyWindow;
         private AngleListWindow favoritesWindow;
         private PolygonWindow polygonWindow;
+        private SizeWindow sizeWindow;
         private NoteWindow noteWindow;
         private UnityEngine.Font fallbackFont;
         private bool modEnabled = true;
@@ -120,7 +121,8 @@ namespace BetterCustomAngles
                 vanillaUI.SetToolbarState(
                     polygonWindow != null && polygonWindow.IsOpen,
                     historyWindow != null && historyWindow.IsOpen,
-                    favoritesWindow != null && favoritesWindow.IsOpen);
+                    favoritesWindow != null && favoritesWindow.IsOpen,
+                    sizeWindow != null && sizeWindow.IsOpen);
             }
 
             if (Store.Limit != config.historyLimit)
@@ -144,7 +146,7 @@ namespace BetterCustomAngles
                     Main.Log("Could not resolve a usable font; UI may not render text");
                 }
 
-                vanillaUI = new VanillaAngleUI(this, current, FontAsset, Sprites);
+                vanillaUI = new VanillaAngleUI(this, current, FontAsset, Sprites, config.cardScale);
                 vanillaUI.Apply();
 
                 EnsureWindows();
@@ -195,6 +197,15 @@ namespace BetterCustomAngles
                     this,
                     new Vector2(config.polygonX, config.polygonY));
             }
+
+            if (sizeWindow == null)
+            {
+                sizeWindow = new SizeWindow(
+                    this,
+                    new Vector2(config.sizeX, config.sizeY));
+            }
+
+            ApplyWindowScale();
         }
 
         private TMP_FontAsset ResolveFont(scnEditor current)
@@ -272,6 +283,50 @@ namespace BetterCustomAngles
         {
             EnsureWindows();
             polygonWindow.Toggle();
+        }
+
+        public void ToggleSizeSettings()
+        {
+            EnsureWindows();
+            sizeWindow.Toggle();
+        }
+
+        public float CardScale => config != null ? config.cardScale : 1f;
+
+        public float WindowScale => config != null ? config.windowScale : 1f;
+
+        public void SetCardScale(float value)
+        {
+            value = Mathf.Clamp(value, ModConfig.MinScale, ModConfig.MaxScale);
+            if (config == null || Mathf.Abs(value - config.cardScale) < 0.0001f)
+            {
+                return;
+            }
+
+            config.cardScale = value;
+            config.Save();
+            vanillaUI?.SetScale(value);
+        }
+
+        public void SetWindowScale(float value)
+        {
+            value = Mathf.Clamp(value, ModConfig.MinScale, ModConfig.MaxScale);
+            if (config == null || Mathf.Abs(value - config.windowScale) < 0.0001f)
+            {
+                return;
+            }
+
+            config.windowScale = value;
+            config.Save();
+            ApplyWindowScale();
+        }
+
+        private void ApplyWindowScale()
+        {
+            float scale = WindowScale;
+            historyWindow?.Frame.SetScale(scale);
+            favoritesWindow?.Frame.SetScale(scale);
+            polygonWindow?.Frame.SetScale(scale);
         }
 
         public bool PlaceAngle(float angle, bool midspin)
@@ -365,6 +420,7 @@ namespace BetterCustomAngles
             bool historyOpen = historyWindow != null && historyWindow.IsOpen;
             bool favoritesOpen = favoritesWindow != null && favoritesWindow.IsOpen;
             bool polygonOpen = polygonWindow != null && polygonWindow.IsOpen;
+            bool sizeOpen = sizeWindow != null && sizeWindow.IsOpen;
             bool noteOpen = noteWindow != null && noteWindow.IsOpen;
             float noteAngle = noteWindow != null ? noteWindow.Angle : 0f;
 
@@ -380,6 +436,7 @@ namespace BetterCustomAngles
             historyWindow = null;
             favoritesWindow = null;
             polygonWindow = null;
+            sizeWindow = null;
             noteWindow = null;
 
             CreateOverlay();
@@ -388,6 +445,7 @@ namespace BetterCustomAngles
             historyWindow?.Frame.SetOpen(historyOpen);
             favoritesWindow?.Frame.SetOpen(favoritesOpen);
             polygonWindow?.Frame.SetOpen(polygonOpen);
+            sizeWindow?.Frame.SetOpen(sizeOpen);
             if (noteOpen)
             {
                 OpenNoteEditor(noteAngle);
@@ -400,6 +458,7 @@ namespace BetterCustomAngles
             historyWindow?.Frame.SetPosition(new Vector2(config.historyX, config.historyY));
             favoritesWindow?.Frame.SetPosition(new Vector2(config.favoritesX, config.favoritesY));
             polygonWindow?.Frame.SetPosition(new Vector2(config.polygonX, config.polygonY));
+            sizeWindow?.Frame.SetPosition(new Vector2(config.sizeX, config.sizeY));
             noteWindow?.Frame.SetPosition(new Vector2(620f, -380f));
             config.Save();
         }
@@ -424,6 +483,10 @@ namespace BetterCustomAngles
                 case "polygon":
                     config.polygonX = position.x;
                     config.polygonY = position.y;
+                    break;
+                case "size":
+                    config.sizeX = position.x;
+                    config.sizeY = position.y;
                     break;
             }
             config.Save();

@@ -20,6 +20,14 @@ namespace BetterCustomAngles
         public float favoritesY = -60f;
         public float polygonX = 25f;
         public float polygonY = -25f;
+        public float sizeX = 620f;
+        public float sizeY = -560f;
+
+        public float cardScale = 1f;
+        public float windowScale = 1f;
+
+        public const float MinScale = 0.7f;
+        public const float MaxScale = 1.5f;
 
         private static string FilePath => Path.Combine(Main.Mod.Path, "settings.json");
 
@@ -61,6 +69,8 @@ namespace BetterCustomAngles
         private void Normalize()
         {
             historyLimit = Mathf.Clamp(historyLimit, 5, 200);
+            cardScale = Mathf.Clamp(cardScale, MinScale, MaxScale);
+            windowScale = Mathf.Clamp(windowScale, MinScale, MaxScale);
         }
 
         public void ResetWindowPositions()
@@ -71,6 +81,8 @@ namespace BetterCustomAngles
             favoritesY = -60f;
             polygonX = 25f;
             polygonY = -25f;
+            sizeX = 620f;
+            sizeY = -560f;
         }
 
         public void Draw()
