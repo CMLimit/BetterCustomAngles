@@ -142,32 +142,57 @@ namespace BetterCustomAngles
 
         public void ClampToScreen()
         {
-            if (CanvasRect == null)
+            if (CanvasRect == null || Root == null || !Root.gameObject.activeInHierarchy)
             {
                 return;
             }
 
-            Bounds bounds = RectTransformUtility.CalculateRelativeRectTransformBounds(CanvasRect, Root);
-            Vector2 canvasSize = CanvasRect.rect.size;
-            const float margin = 24f;
+            Rect canvas = CanvasRect.rect;
+            if (canvas.width <= 1f || canvas.height <= 1f)
+            {
+                return;
+            }
 
+            // 注意：不能用 RectTransformUtility.CalculateRelativeRectTransformBounds。
+            // 那个 API 会把窗口下所有 RectTransform（包括 ScrollRect 里溢出视口的列表内容）
+            // 全部算进包围盒，导致窗口被误判为远远超出屏幕，从而反复被上推/下拉。
+            // 这里只取窗口自身 RectTransform 的四个角。
+            Vector3[] corners = new Vector3[4];
+            Root.GetWorldCorners(corners);
+
+            float minX = float.MaxValue;
+            float maxX = float.MinValue;
+            float minY = float.MaxValue;
+            float maxY = float.MinValue;
+            for (int i = 0; i < 4; i++)
+            {
+                Vector3 local = CanvasRect.InverseTransformPoint(corners[i]);
+                if (local.x < minX) minX = local.x;
+                if (local.x > maxX) maxX = local.x;
+                if (local.y < minY) minY = local.y;
+                if (local.y > maxY) maxY = local.y;
+            }
+
+            const float margin = 24f;
             float dx = 0f;
             float dy = 0f;
-            if (bounds.min.x < -canvasSize.x * 0.5f + margin)
+
+            if (minX < canvas.xMin + margin)
             {
-                dx = (-canvasSize.x * 0.5f + margin) - bounds.min.x;
+                dx = canvas.xMin + margin - minX;
             }
-            if (bounds.max.x > canvasSize.x * 0.5f - margin)
+            else if (maxX > canvas.xMax - margin)
             {
-                dx = (canvasSize.x * 0.5f - margin) - bounds.max.x;
+                dx = canvas.xMax - margin - maxX;
             }
-            if (bounds.min.y < -canvasSize.y * 0.5f + margin)
+
+            if (minY < canvas.yMin + margin)
             {
-                dy = (-canvasSize.y * 0.5f + margin) - bounds.min.y;
+                dy = canvas.yMin + margin - minY;
             }
-            if (bounds.max.y > canvasSize.y * 0.5f - margin)
+            else if (maxY > canvas.yMax - margin)
             {
-                dy = (canvasSize.y * 0.5f - margin) - bounds.max.y;
+                dy = canvas.yMax - margin - maxY;
             }
 
             if (dx != 0f || dy != 0f)
